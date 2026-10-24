@@ -1,7 +1,7 @@
 # RedPill — an AI red-teaming console that tells you what it did *not* test
 
 RedPill attacks an AI model the way an adversary would — jailbreaks, prompt injection, system-prompt and data
-leaks, harmful output — using several open-source attack engines at once, and turns their results into one
+leaks, harmful output, agents hijacked through the data they read — using several open-source attack engines at once, and turns their results into one
 client-ready report that is explicit about what a result does and does not prove.
 
 > **This repository is a showcase. It contains no source code.** RedPill is in a private beta.
@@ -29,6 +29,9 @@ treats "could not look" as its own outcome instead of a pass.
    - **PyRIT** (Microsoft) — objective sets and multi-turn attacks (e.g. crescendo) driven by a separate
      attacker model and scored by a judge model.
    - **promptfoo** — fires prompts from your own prompt bank, so it tests risks specific to your app.
+   - **AgentDojo** (ETH Zurich) — gives the model a real job with simulated tools (bank, email, calendar, files),
+     hides an attacker's instruction in something a tool returns, and checks in code what actually happened:
+     did it do your task, and did it also do the attacker's?
    - **nuclei** — known-CVE and misconfiguration checks against the host.
 4. **Everything is normalised** into one finding schema, graded, and mapped to the OWASP LLM Top 10 and
    MITRE ATLAS.
@@ -53,6 +56,15 @@ treats "could not look" as its own outcome instead of a pass.
   key never quietly becomes training data.
 - **Local-first.** Self-hosted in Docker, no telemetry; attacker and judge models can run on your own GPUs,
   so attack prompts and model replies never leave your network.
+- **It checks its own reading.** On an agent-hijacking scan RedPill replays a recorded, known hijack through its own
+  result reader before it trusts a clean result; if it would not have counted that hijack, the scan is marked
+  untrustworthy instead of clean.
+- **Says who looked.** The report's first page says how many breaches a person has checked, how many *different*
+  prompts stand behind a count (one prompt sent in several disguises is several results), and what the test limit
+  cut. Exporting a report with unchecked breaches shows a warning first.
+- **Grades guardrails too.** Point it at a guardrail (Meta's Prompt Guard 2, LLM Guard, or a cloud filter) and it
+  reports how many attacks were stopped and how many harmless prompts were wrongly blocked, each with a 95% range,
+  so a small test never passes for a precise one.
 - **Safety rails.** A written-authorisation assertion at every launch, and a per-client list of authorised
   targets: launching at an unlisted host warns, and the report records it.
 
@@ -68,10 +80,17 @@ treats "could not look" as its own outcome instead of a pass.
 ## Sample report
 
 [`sample-report/`](sample-report/) holds the **Executive** file of a real scan against a lab model
-(`gemma4:26b` on a local GPU, quick depth, all three attack engines) — never a client system. The Executive
+(`gemma4:26b` on a local GPU, quick depth, garak + PyRIT + promptfoo; captured 2026-10-21, before AgentDojo joined the default set) — never a client system. The Executive
 file is the redacted hand-over copy: summaries and counts, without attack payloads or model replies.
 Lab host addresses and workspace names were replaced with neutral placeholders (`lab-target.example`) in the
 report and the screenshots; nothing else was edited.
+
+## Coming next (not built yet)
+
+- Industry packs: a practice **hospital** app (patient records, HIPAA mapping) and a practice **bank** app (card data,
+  PCI DSS mapping), each with the guardrail tested with and without.
+- Finding **MCP tool servers** and **unapproved AI services** on networks you authorise, read-only.
+- A booby-trapped-instructions test for **coding assistants**.
 
 ## What it is not
 
@@ -81,4 +100,4 @@ report and the screenshots; nothing else was edited.
 
 ## Status
 
-Private beta, all rights reserved. Built on garak, PyRIT, promptfoo and nuclei, each under its own licence.
+Private beta, all rights reserved. Built on garak, PyRIT, promptfoo, AgentDojo and nuclei, each under its own licence.
