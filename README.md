@@ -109,6 +109,18 @@ RedPill can plant canary data in the target's context. If that data comes back, 
 
 "No breach found" is a floor, not proof: these attacks, in this run, did not land.
 
+## Reporting and compliance
+
+- **Three report tiers from one scan:** an Executive summary for leadership, a Technical file for engineers, and a
+  Full file with every transcript.
+- **Mapped to the frameworks your auditors use:** the OWASP Top 10 for LLM Applications, the OWASP Top 10 for
+  Agentic Applications and MITRE ATLAS, with a row for every risk saying whether it was tested, and why not if not.
+- **Remediation guidance:** each breached MITRE ATLAS technique lists MITRE's own published mitigations, so the
+  fix list starts from a recognised source.
+- **Healthcare mapping:** the practice clinic app maps its results to the HIPAA rules they touch.
+- **Machine-readable exports:** SARIF for code-scanning dashboards, plus CSV and JSON for your own tooling.
+- **Evidence you can hand over:** every finding carries its transcript, its verdict and who or what decided it.
+
 ## What makes it different
 
 - **Proof outranks opinion.** RedPill can plant canary data in the target's context. If it comes back, or a
