@@ -12,10 +12,10 @@
 It checks for jailbreaks, prompt injection, leaks of hidden instructions and data, harmful output, and AI
 agents hijacked through the data they read.
 
-**Private beta — to request access, open an issue on this repository.**
+**Private beta — [request access](https://github.com/redpill-security/redpill-showcase/issues/new?title=Beta%20access%20request).**
 
 > This repository is a showcase. It contains no source code. Reviewers can be given read access to the
-> source repository on request.
+> source repository on request (see [Contact](#contact)).
 
 ## Who it's for
 
@@ -220,3 +220,8 @@ report and the screenshots; nothing else was edited.
 ## Status
 
 Private beta, all rights reserved. Built on garak, PyRIT, promptfoo, AgentDojo and nuclei, each under its own licence.
+
+## Contact
+
+To request beta access, or reviewer access to the source, [open a request here](https://github.com/redpill-security/redpill-showcase/issues/new?title=Beta%20access%20request) (a free GitHub account is
+needed). Say who you are and what you would like to test; requests are answered by the RedPill team.
