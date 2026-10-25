@@ -73,6 +73,22 @@ treats "could not look" as its own outcome instead of a pass.
   reports how many attacks were stopped and how many harmless prompts were wrongly blocked, each with a 95% range,
   so a small test never passes for a precise one.
 
+## Testing AI agents that use tools
+
+Many AI systems no longer just answer questions. They send email, pay bills and edit files. The risk shifts from
+what the AI *says* to what it *does*.
+
+RedPill gives the model an everyday job in a safe practice setting, with pretend email, calendar, banking and
+files, and checks two outcomes:
+
+- **Did it finish the job it was given?**
+- **Did it also do something nobody asked for**, because of instructions hidden in an email or file it read?
+
+Both answers come from what actually happened in the practice setting, not from what the AI says it did.
+
+*What this does not cover:* it shows whether your model can be taken over through what it reads. It does not
+test your own product's tools or connections.
+
 ## How it works
 
 RedPill is built around one idea: a security tool must be as clear about what it did **not** check as about what it found. This page shows the path a scan takes and the rules that turn raw results into a verdict.
