@@ -17,6 +17,15 @@ agents hijacked through the data they read.
 > This repository is a showcase. It contains no source code. Reviewers can be given read access to the
 > source repository on request.
 
+## Who it's for
+
+- **Before you launch an AI feature.** You built a chatbot, assistant or agent. Find out how it can be misused
+  before your customers do.
+- **Before you buy or connect a vendor's AI.** A supplier wants to plug their AI into your business. With their
+  written permission, test it yourself instead of relying on their assurances.
+- **When an auditor asks how you tested your AI.** Hand over a dated report mapped to the OWASP Top 10 for LLM
+  and Agentic Applications and MITRE ATLAS, which says what was tested and what was not.
+
 ---
 
 ## The problem
