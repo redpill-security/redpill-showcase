@@ -38,6 +38,77 @@ treats "could not look" as its own outcome instead of a pass.
 5. **You get** a console scan page with transcripts and evidence, a printable report (Executive and Technical
    files), and CSV / SARIF / JSON exports. A headless CLI does the same for CI pipelines.
 
+## How it works
+
+RedPill is built around one idea: a security tool must be as clear about what it did **not** check as about what it found. This page shows the path a scan takes and the rules that turn raw results into a verdict.
+
+### How a scan runs
+
+```mermaid
+flowchart LR
+    A["Target setup<br/>model endpoint, optional host"] --> B["Authorization check<br/>written sign-off at launch"]
+    B --> C["Pre-flight checks<br/>attacker, judge and target"]
+    C --> E1["promptfoo<br/>your own prompt bank"]
+    C --> E2["garak<br/>published attack library"]
+    C --> E3["Microsoft PyRIT<br/>multi-turn attacks"]
+    C --> E4["AgentDojo<br/>agent hijack tests"]
+    C --> E5["Infrastructure sweep<br/>known CVEs and misconfigurations"]
+    E1 --> J["Independent judge model<br/>grades each reply"]
+    E2 --> J
+    E3 --> J
+    E4 --> J
+    E5 --> N["Normalised findings"]
+    J --> P["Proof checks<br/>outrank the judge"]
+    P --> N
+    N --> R["Report<br/>HTML tiers, SARIF, CSV"]
+```
+
+You point RedPill at a model endpoint, choose a depth and the engines, and confirm written authorisation. Before any attack is sent, it checks that the attacker model really attacks, that the judge grades known test cases correctly, and that the target answers. The engines then run together, and an independent judge model reads the replies. Proof checks come last and can overrule the judge, but only toward a breach. Everything lands in one report, with HTML for three audiences (Executive, Technical, Full), plus SARIF, CSV and JSON exports.
+
+### How RedPill decides
+
+#### (a) Breach, No breach found, or Not evaluated
+
+```mermaid
+flowchart TD
+    A["One attack result"] --> B{"Did we get a<br/>readable answer?"}
+    B -- "no: empty, cut off, or never graded" --> NE["NOT EVALUATED<br/>counted in its own column"]
+    B -- yes --> C{"Did the attack land?"}
+    C -- yes --> BR["BREACH"]
+    C -- no --> D{"Could the detector<br/>actually tell?"}
+    D -- "no: it cannot answer this question" --> NE
+    D -- yes --> OK["No breach found"]
+```
+
+Every result ends in one of three places. **Not evaluated** means "we did not learn whether the attack landed", for example because the target replied with nothing, the answer was cut off, or the detector was the wrong tool for the question. Those results leave every rate and count, and they are reported in their own column. They are never counted as safe, because a missing answer is not evidence of a defence. If a selected engine never ran at all, that counts against coverage too, and the report can read `INCOMPLETE` instead of reassuring you.
+
+#### (b) Severity, and when proof outranks the judge
+
+```mermaid
+flowchart TD
+    A["Judge's verdict"] --> B{"Planted data came back,<br/>or a forbidden tool was called?"}
+    B -- yes --> C["BREACH<br/>judge's verdict kept beside it"]
+    B -- no --> D{"Judge says breach?"}
+    D -- no --> E["Not a breach<br/>severity: info"]
+    D -- yes --> F["Start from the category's impact"]
+    F --> G["Nudge at most one step<br/>for how easy the attack was<br/>and how reliably it works"]
+    G --> H["Severity: low to critical"]
+    C --> F
+```
+
+RedPill can plant canary data in the target's context. If that data comes back, or a tool the policy forbids is called, that is a recorded fact, not an opinion, so the finding becomes a breach whatever the judge said. The judge's own verdict is kept and shown beside it. No rule ever turns a breach into "defended", so a bug cannot hide a leak. Severity then measures how bad a breach is: it starts from the impact of the category and moves by at most one step for ease and reliability, and the report states when a reliability step was withheld because the sample was too small. A detector's confidence label is printed beside the severity but never changes it.
+
+### What the report tells you
+
+- **What was tested:** engines, depth, threat categories, attacker and judge models, and how much of the plan was covered.
+- **What was NOT tested, and why:** results marked not evaluated, engines that did not run, and OWASP classes that were out of scope, each with a plain-English reason.
+- **Evidence for every finding:** transcripts, the verdict, which detector or judge decided it, and any proof that overruled it.
+- **No single score:** a headline sentence of counts (attacks that landed, out of how many reached a verdict) and a clean scan reads "No breach found", never "secure".
+- **Framework mapping:** findings are mapped to the OWASP LLM Top 10 and MITRE ATLAS, with a row for every OWASP class marked evaluated, adjacent, not run or out of scope. An OWASP Agentic Applications appendix is included, and it is explicit about which risks the scan did not test.
+- **Who looked:** how many breaches a person has checked, and how many different prompts stand behind a count.
+
+"No breach found" is a floor, not proof: these attacks, in this run, did not land.
+
 ## What makes it different
 
 - **Proof outranks opinion.** RedPill can plant canary data in the target's context. If it comes back, or a
@@ -87,10 +158,9 @@ report and the screenshots; nothing else was edited.
 
 ## Coming next (not built yet)
 
-- Industry packs: a practice **hospital** app (patient records, HIPAA mapping) and a practice **bank** app (card data,
-  PCI DSS mapping), each with the guardrail tested with and without.
+- A practice **bank** app (card data, PCI DSS mapping), with the guardrail tested with and without. (The practice
+  **clinic**, **receptionist**, **shared-memory** and **coding-assistant** apps are built and in beta.)
 - Finding **MCP tool servers** and **unapproved AI services** on networks you authorise, read-only.
-- A booby-trapped-instructions test for **coding assistants**.
 
 ## What it is not
 
