@@ -1,11 +1,21 @@
-# RedPill — an AI red-teaming console that tells you what it did *not* test
+# RedPill
 
-RedPill attacks an AI model the way an adversary would — jailbreaks, prompt injection, system-prompt and data
-leaks, harmful output, agents hijacked through the data they read — using several open-source attack engines at once, and turns their results into one
-client-ready report that is explicit about what a result does and does not prove.
+### Test your AI the way an attacker would — and get a report that says plainly what was tested and what was not.
 
-> **This repository is a showcase. It contains no source code.** RedPill is in a private beta.
-> Reviewers can be given read access to the source repository on request (open an issue here).
+- **Several open-source engines, one report.** NVIDIA garak, Microsoft PyRIT, promptfoo and AgentDojo run
+  together; their results are merged and graded in one place.
+- **"Could not test" is never a pass.** If a test failed to run, the report says so instead of calling the
+  model safe.
+- **Ready to hand to a client or an auditor.** Executive and technical reports, mapped to OWASP and MITRE
+  ATLAS, with CSV / SARIF / JSON exports.
+
+It checks for jailbreaks, prompt injection, leaks of hidden instructions and data, harmful output, and AI
+agents hijacked through the data they read.
+
+**Private beta — to request access, open an issue on this repository.**
+
+> This repository is a showcase. It contains no source code. Reviewers can be given read access to the
+> source repository on request.
 
 ---
 
