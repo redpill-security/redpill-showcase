@@ -38,24 +38,21 @@ treats "could not look" as its own outcome instead of a pass.
 
 ## What it does
 
-1. **Point it at a model endpoint** (the target) — anything OpenAI-compatible (Ollama, vLLM, LM Studio,
-   llama.cpp, OpenAI), and through promptfoo also Gemini, Anthropic, Bedrock and Azure. Optionally its host,
-   for an infrastructure sweep.
-2. **Choose a depth** (quick / standard / deep), threat categories and engines, confirm written authorisation,
-   launch.
-3. **The engines run:**
-   - **garak** (NVIDIA) — a large library of published single-turn attacks, each with its own detector.
-   - **PyRIT** (Microsoft) — objective sets and multi-turn attacks (e.g. crescendo) driven by a separate
-     attacker model and scored by a judge model.
-   - **promptfoo** — fires prompts from your own prompt bank, so it tests risks specific to your app.
-   - **AgentDojo** (ETH Zurich) — gives the model a real job with simulated tools (bank, email, calendar, files),
-     hides an attacker's instruction in something a tool returns, and checks in code what actually happened:
-     did it do your task, and did it also do the attacker's?
-   - **nuclei** — known-CVE and misconfiguration checks against the host.
-4. **Everything is normalised** into one finding schema, graded, and mapped to the OWASP LLM Top 10 and
+1. **Point it at your AI.** Works with self-hosted models and the major cloud AI services (some engines reach
+   more of them than others). Optionally add the server it runs on, for a check for known security holes.
+2. **Choose how deep to go** (quick, standard or deep) and what to test, confirm you have written permission, and
+   start.
+3. **Several engines test it at once:**
+   - **garak** (NVIDIA) — a large library of published attacks.
+   - **PyRIT** (Microsoft) — patient, multi-step conversations run by a separate attacking AI and graded by an
+     independent judging AI.
+   - **promptfoo** — your own test prompts, for risks specific to your business.
+   - **AgentDojo** (ETH Zurich) — whether an AI agent can be taken over through what it reads (see below).
+   - **nuclei** — known security holes and misconfigurations on the server.
+4. **One set of results.** Everything is merged, graded and mapped to the OWASP Top 10 for LLM Applications and
    MITRE ATLAS.
-5. **You get** a console scan page with transcripts and evidence, a printable report (Executive and Technical
-   files), and CSV / SARIF / JSON exports. A headless CLI does the same for CI pipelines.
+5. **You get** a console with the evidence behind every finding, a report for leadership and one for engineers,
+   and exports for your other tools. It can also run automatically as part of a software release.
 
 ## What makes it different
 
@@ -147,7 +144,7 @@ flowchart TD
     C --> F
 ```
 
-RedPill can plant canary data in the target's context. If that data comes back, or a tool the policy forbids is called, that is a recorded fact, not an opinion, so the finding becomes a breach whatever the judge said. The judge's own verdict is kept and shown beside it. No rule ever turns a breach into "defended", so a bug cannot hide a leak. Severity then measures how bad a breach is: it starts from the impact of the category and moves by at most one step for ease and reliability, and the report states when a reliability step was withheld because the sample was too small. A detector's confidence label is printed beside the severity but never changes it.
+RedPill can hide a marker in the data the target can see. If that marker comes back, or the AI uses a tool it was told not to, that is a recorded fact, not an opinion, so the finding becomes a breach whatever the judge said. The judge's own verdict is kept and shown beside it. No rule ever turns a breach into "defended", so a bug cannot hide a leak. Severity then says how bad a breach is, based on the kind of risk and how easy and reliable the attack was, and the report says when a test was too small to be sure.
 
 ### What the report tells you
 
@@ -191,19 +188,18 @@ report and the screenshots; nothing else was edited.
 
 ## More details
 
-- **No single score.** The headline is a sentence of counts: attacks that landed, out of how many reached a
-  verdict, and how much of the plan was covered. A clean scan reads "No breach found", not "secure".
-- **It measures itself.** RedPill keeps a blind, human-labelled answer key of its own past verdicts and
-  measures its own false-clean rate with confidence intervals — under a written holdout rule so that answer
-  key never quietly becomes training data.
-- **It checks its own reading.** On an agent-hijacking scan RedPill replays a recorded, known hijack through its own
-  result reader before it trusts a clean result; if it would not have counted that hijack, the scan is marked
-  untrustworthy instead of clean.
-- **Says who looked.** The report's first page says how many breaches a person has checked, how many *different*
-  prompts stand behind a count (one prompt sent in several disguises is several results), and what the test limit
-  cut. Exporting a report with unchecked breaches shows a warning first.
-- **Safety rails.** A written-authorisation assertion at every launch, and a per-client list of authorised
-  targets: launching at an unlisted host warns, and the report records it.
+- **No single score.** The headline is plain counts: how many attacks got through, out of how many could be
+  judged, and how much of the plan was covered. A clean scan reads "No breach found", never "secure".
+- **It checks its own accuracy.** People review samples of RedPill's past results without seeing its verdict
+  first, and RedPill measures how often it wrongly called something safe, with an honest margin of error. Those
+  reviewed cases are never used to tune RedPill, so the accuracy figure stays honest.
+- **It double-checks a clean result.** Before trusting a clean agent test, RedPill runs a known takeover through
+  its own scoring. If that would not have been caught, the scan is marked untrustworthy, not clean.
+- **Says who looked.** The report's first page says how many breaches a person has checked, how many truly
+  different attacks stand behind a count, and what a test limit left out. Exporting a report with unchecked
+  breaches shows a warning first.
+- **Safety rails.** Written permission must be confirmed at every launch, and each client has a list of approved
+  targets. Starting a scan against anything else triggers a warning, and the report records it.
 
 ## Coming next (not built yet)
 
