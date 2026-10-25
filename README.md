@@ -57,6 +57,22 @@ treats "could not look" as its own outcome instead of a pass.
 5. **You get** a console scan page with transcripts and evidence, a printable report (Executive and Technical
    files), and CSV / SARIF / JSON exports. A headless CLI does the same for CI pipelines.
 
+## What makes it different
+
+- **Hard proof beats opinion.** RedPill can hide a marker in the data the target can see. If that marker comes
+  back, or the AI uses a tool it was told not to, the breach is recorded as fact, even if the judge model said the
+  attack failed. Proof can only add a breach, never remove one, and the judge's verdict is kept beside it.
+- **Honest coverage.** A result RedPill cannot trust, such as a verdict on an empty reply, is counted as
+  *not evaluated*, never as *defended*. An engine that was chosen but never ran counts as a gap. A report can
+  read `INCOMPLETE` or `NOT EVALUATED` rather than falsely reassure you.
+- **Checks itself before every scan.** Before any attack is sent, RedPill makes sure the attacking model really
+  attacks, the judge grades known test cases correctly, and the target answers. The result goes in the report.
+- **Your data stays with you.** Runs in Docker on your own hardware, with no telemetry. The attacking and judging
+  models can run on your own GPUs, so test prompts and model replies never leave your network.
+- **Grades guardrails too.** Point it at a guardrail (Meta's Prompt Guard 2, LLM Guard, or a cloud filter) and it
+  reports how many attacks were stopped and how many harmless prompts were wrongly blocked, each with a 95% range,
+  so a small test never passes for a precise one.
+
 ## How it works
 
 RedPill is built around one idea: a security tool must be as clear about what it did **not** check as about what it found. This page shows the path a scan takes and the rules that turn raw results into a verdict.
@@ -140,36 +156,6 @@ RedPill can plant canary data in the target's context. If that data comes back, 
 - **Machine-readable exports:** SARIF for code-scanning dashboards, plus CSV and JSON for your own tooling.
 - **Evidence you can hand over:** every finding carries its transcript, its verdict and who or what decided it.
 
-## What makes it different
-
-- **Proof outranks opinion.** RedPill can plant canary data in the target's context. If it comes back, or a
-  forbidden tool is called, that is a recorded fact that overrides a "defended" verdict from a judge model —
-  only ever toward a breach. The judge's own verdict is kept beside it.
-- **Honest coverage.** A verdict RedPill cannot trust (for example one scored on an empty reply) is counted as
-  *not evaluated*, never as *defended*. An engine that was selected but never ran counts against coverage.
-  A report can read `INCOMPLETE` or `NOT EVALUATED` instead of reassuring you.
-- **Pre-flight checks before every scan.** Before any attack is sent, RedPill checks that the attacker model
-  actually produces attack content, that the judge grades known test cases correctly in both directions, and
-  that the target answers — and records the result in the report.
-- **No single score.** The headline is a sentence of counts: attacks that landed, out of how many reached a
-  verdict, and how much of the plan was covered. A clean scan reads "No breach found", not "secure".
-- **It measures itself.** RedPill keeps a blind, human-labelled answer key of its own past verdicts and
-  measures its own false-clean rate with confidence intervals — under a written holdout rule so that answer
-  key never quietly becomes training data.
-- **Local-first.** Self-hosted in Docker, no telemetry; attacker and judge models can run on your own GPUs,
-  so attack prompts and model replies never leave your network.
-- **It checks its own reading.** On an agent-hijacking scan RedPill replays a recorded, known hijack through its own
-  result reader before it trusts a clean result; if it would not have counted that hijack, the scan is marked
-  untrustworthy instead of clean.
-- **Says who looked.** The report's first page says how many breaches a person has checked, how many *different*
-  prompts stand behind a count (one prompt sent in several disguises is several results), and what the test limit
-  cut. Exporting a report with unchecked breaches shows a warning first.
-- **Grades guardrails too.** Point it at a guardrail (Meta's Prompt Guard 2, LLM Guard, or a cloud filter) and it
-  reports how many attacks were stopped and how many harmless prompts were wrongly blocked, each with a 95% range,
-  so a small test never passes for a precise one.
-- **Safety rails.** A written-authorisation assertion at every launch, and a per-client list of authorised
-  targets: launching at an unlisted host warns, and the report records it.
-
 ## Screenshots
 
 | | |
@@ -186,6 +172,22 @@ RedPill can plant canary data in the target's context. If that data comes back, 
 file is the redacted hand-over copy: summaries and counts, without attack payloads or model replies.
 Lab host addresses and workspace names were replaced with neutral placeholders (`lab-target.example`) in the
 report and the screenshots; nothing else was edited.
+
+## More details
+
+- **No single score.** The headline is a sentence of counts: attacks that landed, out of how many reached a
+  verdict, and how much of the plan was covered. A clean scan reads "No breach found", not "secure".
+- **It measures itself.** RedPill keeps a blind, human-labelled answer key of its own past verdicts and
+  measures its own false-clean rate with confidence intervals — under a written holdout rule so that answer
+  key never quietly becomes training data.
+- **It checks its own reading.** On an agent-hijacking scan RedPill replays a recorded, known hijack through its own
+  result reader before it trusts a clean result; if it would not have counted that hijack, the scan is marked
+  untrustworthy instead of clean.
+- **Says who looked.** The report's first page says how many breaches a person has checked, how many *different*
+  prompts stand behind a count (one prompt sent in several disguises is several results), and what the test limit
+  cut. Exporting a report with unchecked breaches shows a warning first.
+- **Safety rails.** A written-authorisation assertion at every launch, and a per-client list of authorised
+  targets: launching at an unlisted host warns, and the report records it.
 
 ## Coming next (not built yet)
 
